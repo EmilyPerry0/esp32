@@ -3,7 +3,7 @@
     "idf.openOcdConfigs": [
       "board/esp32-wrover-kit-3.3v.cfg"
     ],
-    "idf.port": "detect",
+    "idf.port": "/dev/tty.usbserial-574F0071321",
     "idf.customExtraVars": {
       "IDF_TARGET": "esp32"
     },
@@ -12,5 +12,6 @@
       "--background-index",
       "--query-driver=**",
       "--compile-commands-dir=/Users/emily/Documents/coding/esp32/train_signal/build"
-    ]
+    ],
+    "idf.flashType": "UART"
 }
