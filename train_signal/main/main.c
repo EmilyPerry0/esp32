@@ -4,10 +4,11 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
-static const char *TAG = "Train Light Signal";
+static const char *TAG = "Train Light Signal Project";
 
 #define LED_ON  1
 #define LED_OFF 0
+#define MAX_NUM_SIGNALS 64
 
 typedef enum {
     GREEN,
@@ -16,10 +17,18 @@ typedef enum {
     NUM_LIGHTS_IN_SIGNAL // last element in enum tracks the number of lights
 } signal_color;
 
-typedef struct {
+typedef struct signal_t{
     gpio_num_t pins[NUM_LIGHTS_IN_SIGNAL];
     signal_color current_signal_color;
+    int num_previous_signals;
+    struct signal_t *previous_signals[MAX_NUM_SIGNALS];
 } signal_t;
+
+static signal_t all_signals[] = {
+    { .pins = { [GREEN] = 25, [YELLOW] = 26, [RED] = 27 } },
+    { .pins = { [GREEN] = 10, [YELLOW] = 11, [RED] = 12 } },  // placeholder pins
+};
+#define NUM_SIGNALS (sizeof(all_signals) / sizeof(all_signals[0]))
 
 static void setup_lights(signal_t *signal){
     ESP_LOGI(TAG, "configuring signal lights...");
@@ -59,14 +68,28 @@ static bool has_train_passed_end(){
     // on second thought, split this up into two functions. update the global var in the main loop
 }
 
+// returns true if successful, false if too many previous signals
+static bool add_previous_signal(signal_t *signal, signal_t *previous){
+    if(signal->num_previous_signals >= MAX_NUM_SIGNALS){
+        ESP_LOGE(TAG, "too many previous signals, returning false...");
+        return false;
+    } else {
+        signal->previous_signals[signal->num_previous_signals++] = previous;
+        return true;
+    }
+}
 
 
 void app_main(void)
 {
-    static signal_t signal_1 = {
-        .pins = { [GREEN] = 25, [YELLOW] = 26, [RED] = 27}};
+    // simple loop with two signals
+    add_previous_signal(&all_signals[0], &all_signals[1]);
+    add_previous_signal(&all_signals[1], &all_signals[0]);
 
-    setup_lights(&signal_1);
+    // init lights
+    for(int i = 0; i < NUM_SIGNALS; i++){
+        setup_lights(&all_signals[i]);
+    }
 
     // while(1){
     //     if(is_train_close()){ // starting with just one signal for now, can update in the future once i have proof of concept
