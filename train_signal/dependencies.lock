@@ -1,0 +1,18 @@
+dependencies:
+  esp-idf-lib/ultrasonic:
+    component_hash: 03fe38aa9c6954892f0008cffad706acecf75d00dc603e7eada39210779c98e4
+    dependencies: []
+    source:
+      registry_url: https://components.espressif.com/
+      type: service
+    version: 2.0.0
+  idf:
+    source:
+      type: idf
+    version: 6.1.0
+direct_dependencies:
+- esp-idf-lib/ultrasonic
+- idf
+manifest_hash: c3e1838555fa63c08c91af030576b61a2792e5fa8cbd9101e013fab1d5b6e93d
+target: esp32
+version: 3.0.0
